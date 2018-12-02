@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
 
 import GameScreen from './components/GameScreen.js';
+import BallComponent from './components/ball';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -19,7 +20,7 @@ export default class App extends React.Component {
     }
     return (
       <View style={styles.container}>
-
+		  <BallComponent />
           <GameScreen direction={inputData}/>
 
           <View style={styles.dpad}>
