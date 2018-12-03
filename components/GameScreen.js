@@ -43,7 +43,6 @@ export default class GameScreen extends React.Component {
 
   resetAB = () => {
     this.props.direction.abInputs = ''
-    this.props.direction.buttonDirection = ''
   }
 
   randomX =()=>{
@@ -129,10 +128,29 @@ export default class GameScreen extends React.Component {
       }
     }, 60);
   }
+  moveShipFrame = () => {
+    this.moveFrame = setInterval(() => {
+      if (this.props.direction.shipStop == 'stop') {
+        clearInterval(this.moveFrame)
+      } if (this.props.direction.buttonDirection == 'Up' && this.state.initialShipY > 100 && this.props.direction.shipStop != 'Stop') {
+        console.log('moving')
+        this.setState({initialShipY: this.state.initialShipY-10})
+      } else if (this.props.direction.buttonDirection == 'Down' && this.state.initialShipY < 445 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipY: this.state.initialShipY+10})
+      } else if (this.props.direction.buttonDirection == 'Left' && this.state.initialShipX > 0 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipX: this.state.initialShipX-10})
+      } else if (this.props.direction.buttonDirection == 'Right' && this.state.initialShipX < 350 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipX: this.state.initialShipX+10})
+      } if (this.props.direction.shipStop == 'stop') {
+        
+      }
+    }, 60);
+  }
 
   componentWillUnmount(){
     clearInterval(this.interval);
     clearInterval(this.updateInterval);
+    clearInterval(this.moveFrame);
   }
 
   componentDidMount() {
@@ -158,22 +176,21 @@ export default class GameScreen extends React.Component {
           })
       }
     }, 999);
+
+    this.moveFrame = setInterval(() => {
+      if (this.props.direction.buttonDirection == 'Up' && this.state.initialShipY > 100 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipY: this.state.initialShipY-10})
+      } else if (this.props.direction.buttonDirection == 'Down' && this.state.initialShipY < 445 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipY: this.state.initialShipY+10})
+      } else if (this.props.direction.buttonDirection == 'Left' && this.state.initialShipX > 0 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipX: this.state.initialShipX-10})
+      } else if (this.props.direction.buttonDirection == 'Right' && this.state.initialShipX < 350 && this.props.direction.shipStop != 'Stop') {
+        this.setState({initialShipX: this.state.initialShipX+10})
+      }
+    }, 60);
   }
 
   render() {
-    if (this.props.direction.buttonDirection == 'Up' && this.state.initialShipY > 100) {
-      this.setState({initialShipY: this.state.initialShipY-=10})
-      this.resetDirection()
-    } else if (this.props.direction.buttonDirection == 'Down' && this.state.initialShipY < 445) {
-      this.setState({initialShipY: this.state.initialShipY+=10})
-      this.resetDirection()
-    } else if (this.props.direction.buttonDirection == 'Left' && this.state.initialShipX > 0) {
-      this.setState({initialShipX: this.state.initialShipX-=10})
-      this.resetDirection()
-    } else if (this.props.direction.buttonDirection == 'Right' && this.state.initialShipX < 350) {
-      this.setState({initialShipX: this.state.initialShipX+=10})
-      this.resetDirection()
-    }
 
     return (
       <View style={styles.gameScreen}>
