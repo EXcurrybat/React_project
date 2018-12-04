@@ -39,7 +39,8 @@ export default class GameScreen extends React.Component {
       showBoom: 'none',
       boomX: 0,
       boomY: 0,
-      playerLife: 5
+      playerLife: 1,
+      gameState: 'inSession'
     }
     this.randomX = this.randomX.bind(this);
     this.randomY = this.randomY.bind(this);
@@ -77,7 +78,6 @@ export default class GameScreen extends React.Component {
 
   onLayout = (e) => {
     this.setState({enemyCurrentX: e.nativeEvent.layout.x, enemyCurrentY: e.nativeEvent.layout.y})
-    // console.log(e.nativeEvent.layout.x + " ," + e.nativeEvent.layout.y);
   }
 
   resetBullets = () => {
@@ -142,7 +142,6 @@ export default class GameScreen extends React.Component {
       if (this.props.direction.shipStop == 'stop') {
         clearInterval(this.moveFrame)
       } if (this.props.direction.buttonDirection == 'Up' && this.state.initialShipY > 100 && this.props.direction.shipStop != 'Stop') {
-        console.log('moving')
         this.setState({initialShipY: this.state.initialShipY-10})
       } else if (this.props.direction.buttonDirection == 'Down' && this.state.initialShipY < 445 && this.props.direction.shipStop != 'Stop') {
         this.setState({initialShipY: this.state.initialShipY+10})
@@ -177,6 +176,11 @@ export default class GameScreen extends React.Component {
     clearInterval(this.interval);
     clearInterval(this.updateInterval);
     clearInterval(this.moveFrame);
+  }
+
+  sendGSData = () => {
+    dataList = 'finished'
+    this.props.callbackFromParent(dataList);
   }
 
   componentDidMount() {
@@ -247,48 +251,54 @@ export default class GameScreen extends React.Component {
 
   render() {
     let returnGame = () => {
-      if (this.state.enemyLife == 0 || this.state.gameTime == 0 || this.state.playerLife == 0) {
-        return <Highscore />
+      if (this.state.gameState == 'inSession'){
+        if (this.state.enemyLife == 0 || this.state.gameTime == 0 || this.state.playerLife == 0) {
+          this.sendGSData()
+          this.setState({enemyLife:20, playerLife:1, gameTime:120, gameState: 'finished'})
+          return <Highscore />
+        } else {
+          return <View style={styles.gameScreen}>
+            <Image source={this.state.shipImage} style={{top:this.state.initialShipY, left: this.state.initialShipX, position: 'absolute', width: 50, height: 50}}/>
+            <Animatable.View onLayout={this.onLayout} style={styles.ballView} animation={this.randomAnim()} iterationCount="infinite" easing="linear" duration={1000 * 1}>
+              <Animatable.Image style={styles.ballImg} source={require('../assets/spriteAssets/enemy.png')} />
+            </Animatable.View>
+            
+            <Text style={{color: 'white', position: 'absolute', left:7, top:0}}>Ammo Count:</Text>
+            <Text style={{color: 'white', position: 'absolute', left:45, top:25}}>{this.state.ammoCount}</Text>
+            <Text style={{color: 'white', position: 'absolute', top:0}}>Game Time:</Text>
+            <Text style={{color: 'white', position: 'absolute', top:25}}>{this.state.gameTime}</Text>
+            <Text style={{color: 'white', position: 'absolute', top:0, right:25}}>Enemy Life: </Text>
+            <Text style={{color: 'white', position: 'absolute', top:25, right:70}}>{this.state.enemyLife}</Text>
+
+            {/* <Animatable.View style={{top:this.state.beginY-50, left: this.state.beginX+25, position: 'absolute', width: 50, height: 50}} animation={{0:{top: this.state.beginY}, 1:{top: 1000}}} iterationCount="infinite" easing="linear" delay={2000} duration={2000}>
+              <Image source={this.state.blaster} style={{height: 50, width: 50}}/>
+            </Animatable.View> */}
+
+            <View style={{top:this.state.boomY, left: this.state.boomX, position: 'absolute', width: 50, height: 50, display: this.state.showBoom}}>
+              <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.showBoom}}/>
+            </View>
+
+            <View style={{top:this.state.enemyBulletY, left: this.state.enemyBulletX, position: 'absolute', width: 50, height: 50, display: this.state.showEnemyBullet}}>
+              <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showEnemyBullet}}/>
+            </View>
+
+            <View style={{top:this.state.blaster1OriginY, left: this.state.blaster1OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster1}}>
+              <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster1}}/>
+            </View>
+
+            <View style={{top:this.state.blaster2OriginY, left: this.state.blaster2OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster2}}>
+              <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster2}}/>
+            </View>
+
+            <View style={{top:this.state.blaster3OriginY, left: this.state.blaster3OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster3}}>
+              <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster3}}/>
+            </View>
+
+            {this.shootBlaster()}
+          </View>
+        }
       } else {
-        return <View style={styles.gameScreen}>
-          <Image source={this.state.shipImage} style={{top:this.state.initialShipY, left: this.state.initialShipX, position: 'absolute', width: 50, height: 50}}/>
-          <Animatable.View onLayout={this.onLayout} style={styles.ballView} animation={this.randomAnim()} iterationCount="infinite" easing="linear" duration={1000 * 1}>
-            <Animatable.Image style={styles.ballImg} source={require('../assets/spriteAssets/enemy.png')} />
-          </Animatable.View>
-          
-          <Text style={{color: 'white', position: 'absolute', left:7, top:0}}>Ammo Count:</Text>
-          <Text style={{color: 'white', position: 'absolute', left:45, top:25}}>{this.state.ammoCount}</Text>
-          <Text style={{color: 'white', position: 'absolute', top:0}}>Game Time:</Text>
-          <Text style={{color: 'white', position: 'absolute', top:25}}>{this.state.gameTime}</Text>
-          <Text style={{color: 'white', position: 'absolute', top:0, right:25}}>Enemy Life: </Text>
-          <Text style={{color: 'white', position: 'absolute', top:25, right:70}}>{this.state.enemyLife}</Text>
-
-          {/* <Animatable.View style={{top:this.state.beginY-50, left: this.state.beginX+25, position: 'absolute', width: 50, height: 50}} animation={{0:{top: this.state.beginY}, 1:{top: 1000}}} iterationCount="infinite" easing="linear" delay={2000} duration={2000}>
-            <Image source={this.state.blaster} style={{height: 50, width: 50}}/>
-          </Animatable.View> */}
-
-          <View style={{top:this.state.boomY, left: this.state.boomX, position: 'absolute', width: 50, height: 50, display: this.state.showBoom}}>
-            <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.showBoom}}/>
-          </View>
-
-          <View style={{top:this.state.enemyBulletY, left: this.state.enemyBulletX, position: 'absolute', width: 50, height: 50, display: this.state.showEnemyBullet}}>
-            <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showEnemyBullet}}/>
-          </View>
-
-          <View style={{top:this.state.blaster1OriginY, left: this.state.blaster1OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster1}}>
-            <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster1}}/>
-          </View>
-
-          <View style={{top:this.state.blaster2OriginY, left: this.state.blaster2OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster2}}>
-            <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster2}}/>
-          </View>
-
-          <View style={{top:this.state.blaster3OriginY, left: this.state.blaster3OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster3}}>
-            <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster3}}/>
-          </View>
-
-          {this.shootBlaster()}
-        </View>
+        return <Highscore />
       }
     }
     return (
@@ -302,17 +312,14 @@ export default class GameScreen extends React.Component {
         this.setState({blaster1OriginX: this.state.initialShipX, blaster1OriginY: this.state.initialShipY-15, ammoCount: this.state.ammoCount-1})
         this.bullet1Frame()
         this.resetAB()
-        console.log('pressed ammo1')
       } else if (this.state.ammoCount == 2){
         this.setState({blaster2OriginX: this.state.initialShipX, blaster2OriginY: this.state.initialShipY-15, ammoCount: this.state.ammoCount-1})
         this.bullet2Frame()
         this.resetAB()
-        console.log('pressed ammo2')
       } else if (this.state.ammoCount == 3){
         this.setState({blaster3OriginX: this.state.initialShipX, blaster3OriginY: this.state.initialShipY-15, ammoCount: this.state.ammoCount-1})
         this.bullet3Frame()
         this.resetAB()
-        console.log('pressed ammo3')
       }
     } if (this.props.direction.abInputs == 'B') {
         if (this.state.reloadStatus == 'able'){
