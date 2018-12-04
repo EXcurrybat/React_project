@@ -15,6 +15,7 @@ export default class App extends React.Component {
       stop: 'stop',
       displayMenu: 100,
       menuSelection: '',
+      secret: '',
       menuPosition: 237
     }
   }
@@ -50,6 +51,15 @@ export default class App extends React.Component {
     let returnScreen = () =>{
       if (this.state.menuSelection == 'game'){
         return <GameScreen direction={inputData}/>
+      } else if (this.state.menuSelection == 'highscore' && this.state.menuInput == 'B') {
+        this.setState({menuSelection: ''})
+        return <View style={{width: '100%', height: '100%', justifyContent:'center', alignItems: 'center'}}>
+          <Text style={{color: 'white', fontSize: 30, position: 'absolute', top: 30, textAlign: 'center', fontWeight: 'bold'}}>GENERIC AF SPACE SHOOTER GAME</Text>
+          <Text style={{color: 'white', fontSize: 15, position: 'absolute', textAlign: 'center'}}>Start Game</Text>
+          <Text style={{color: 'white', fontSize: 15, position: 'absolute', top: 300, textAlign: 'center'}}>See Highscore</Text>
+          <Image source={require('./assets/layoutAssets/arrow.png')} style={{width: 30, height: 30, position:'absolute', left: 70, top: this.state.menuPosition}}/>
+          {menuInteraction()}
+        </View>
       } else if (this.state.menuSelection == 'highscore') {
         return <HighScore />
       } else {
@@ -98,7 +108,7 @@ export default class App extends React.Component {
               <Image source={require('./assets/layoutAssets/aButton.png')} style={{height: '100%', width: '100%'}} resizeMode={'stretch'}/>
           </TouchableOpacity>
           <TouchableOpacity 
-            onPress={()=> this.setState({pressedAB: 'B'})}
+            onPress={()=> this.setState({pressedAB: 'B', menuInput: 'B'})}
             onPressOut={()=> this.setState({pressedAB: ''})}
             style={{height:'50%', width:'50%', position: 'absolute', bottom: 0, left: 0}}>
               <Image source={require('./assets/layoutAssets/bButton.png')} style={{height: '100%', width: '100%'}} resizeMode={'stretch'}/>
