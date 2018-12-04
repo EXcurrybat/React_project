@@ -31,7 +31,6 @@ export default class HighscoreComponent extends Component {
 
     render() {
         return (
-			
 			<View style={styles.gameScreen}>
 				<Text style={{color: 'white'}}>This is Score</Text>
 			</View>
