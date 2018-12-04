@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { StyleSheet, View, Image, Text, Dimensions } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 export default class GameScreen extends React.Component {
   constructor(props){
     super(props)
     this.state={
+      winWidth: Dimensions.get('window').width,
+      winHeight: Dimensions.get('window').height,
       shipImage: require('../assets/spriteAssets/ship.png'),
       blaster: require('../assets/spriteAssets/blaster.gif'),
       boom: require('../assets/spriteAssets/boom.gif'),
@@ -160,14 +162,11 @@ export default class GameScreen extends React.Component {
       boomY:this.state.enemyBulletY,
       showBoom: 'flex',
     });
-    
-
-      setTimeout(() => {
-        this.setState({
-          showBoom: 'none',
-        })
-        }, 300)
-
+    setTimeout(() => {
+      this.setState({
+        showBoom: 'none',
+      })
+      }, 300)
   }
 
   componentWillUnmount(){
@@ -177,6 +176,7 @@ export default class GameScreen extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.state.winWidth,this.state.winHeight)
     this.aniTime = setInterval(() => {
       this.setState({gameTime: this.state.gameTime+1})
       if(this.state.gameTime == 120) {
@@ -205,9 +205,9 @@ export default class GameScreen extends React.Component {
           this.setState({showEnemyBullet: 'none'})
           this.bulletBoom();
           clearInterval(this.bossBullet)
-      } else if (this.state.enemyBulletY < 470) {
+      } else if (this.state.enemyBulletY < 1000) {
         this.setState({showEnemyBullet: 'flex', enemyBulletY: this.state.enemyBulletY+10})
-      } else if (this.state.enemyBulletY >= 450){
+      } else if (this.state.enemyBulletY >= 800){
         this.setState({showEnemyBullet: 'none'})
         clearInterval(this.bossBullet)
       }
@@ -319,7 +319,8 @@ export default class GameScreen extends React.Component {
 const styles = StyleSheet.create({
     gameScreen:{
         position: 'absolute',
-        height: '100%', width: '100%',
+        top: '10%',
+        height: '60%', width: '100%',
         backgroundColor: 'black',
         justifyContent:'center', alignItems:'center'
     },
@@ -328,7 +329,7 @@ const styles = StyleSheet.create({
       width: 100,
       height: 100,
       bottom: 0,
-      zIndex: 5
+      zIndex: 5,
     },
     ballImg: {
       position: 'absolute',
