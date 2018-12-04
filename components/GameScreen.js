@@ -205,9 +205,9 @@ export default class GameScreen extends React.Component {
           this.setState({showEnemyBullet: 'none'})
           this.bulletBoom();
           clearInterval(this.bossBullet)
-      } else if (this.state.enemyBulletY < 1000) {
+      } else if (this.state.enemyBulletY < 470) {
         this.setState({showEnemyBullet: 'flex', enemyBulletY: this.state.enemyBulletY+10})
-      } else if (this.state.enemyBulletY >= 800){
+      } else if (this.state.enemyBulletY >= 450){
         this.setState({showEnemyBullet: 'none'})
         clearInterval(this.bossBullet)
       }

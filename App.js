@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Button, Text } from 'react-native';
 
 import GameScreen from './components/GameScreen.js';
-import TitleScreen from './components/TitleScreen';
-import HighScore from './components/Highscore'
+import HighScore from './components/Highscore.js'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -51,6 +50,8 @@ export default class App extends React.Component {
     let returnScreen = () =>{
       if (this.state.menuSelection == 'game'){
         return <GameScreen direction={inputData}/>
+      } else if (this.state.menuSelection == 'highscore') {
+        return <HighScore />
       } else {
         return <View style={{width: '100%', height: '100%', justifyContent:'center', alignItems: 'center'}}>
           <Text style={{color: 'white', fontSize: 30, position: 'absolute', top: 30, textAlign: 'center', fontWeight: 'bold'}}>GENERIC AF SPACE SHOOTER GAME</Text>
