@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, Image, Text } from 'react-native';
+import { StyleSheet, View, Image, Text, Dimensions } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 import Highscore from './Highscore.js';
@@ -8,6 +8,8 @@ export default class GameScreen extends React.Component {
   constructor(props){
     super(props)
     this.state={
+      winWidth: Dimensions.get('window').width,
+      winHeight: Dimensions.get('window').height,
       shipImage: require('../assets/spriteAssets/ship.png'),
       blaster: require('../assets/spriteAssets/blaster.gif'),
       boom: require('../assets/spriteAssets/boom.gif'),
@@ -36,9 +38,18 @@ export default class GameScreen extends React.Component {
       enemyBulletX: 0,
       enemyBulletY: 0,
       showEnemyBullet: 'none',
+      show1Boom: 'none',
+      show2Boom: 'none',
+      show3Boom: 'none',
       showBoom: 'none',
       boomX: 0,
       boomY: 0,
+      boom1X: 0,
+      boom1Y: 0,
+      boom2X: 0,
+      boom2Y: 0,
+      boom3X: 0,
+      boom3Y: 0,
       playerLife: 5
     }
     this.randomX = this.randomX.bind(this);
@@ -97,6 +108,7 @@ export default class GameScreen extends React.Component {
     this.b1Frame = setInterval(() => {
       if ((this.state.enemyCurrentX< this.state.blaster1OriginX && this.state.blaster1OriginX < (this.state.enemyCurrentX+100))
         && this.state.enemyCurrentY< this.state.blaster1OriginY && this.state.blaster1OriginY < (this.state.enemyCurrentY+100)){
+          this.bullet1Boom();
           this.setState({enemyLife: this.state.enemyLife-1, reloadStatus: 'able', showBlaster1: 'none'})
           clearInterval(this.b1Frame)
       } else if (this.state.blaster1OriginY <= 470 && this.state.blaster1OriginY >=19) {
@@ -112,6 +124,7 @@ export default class GameScreen extends React.Component {
     this.b2Frame = setInterval(() => {
       if ((this.state.enemyCurrentX< this.state.blaster2OriginX && this.state.blaster2OriginX < (this.state.enemyCurrentX+100))
         && this.state.enemyCurrentY< this.state.blaster2OriginY && this.state.blaster2OriginY < (this.state.enemyCurrentY+100)){
+          this.bullet2Boom();
           this.setState({enemyLife: this.state.enemyLife-1, showBlaster2: 'none'})
           clearInterval(this.b2Frame)
       } else if (this.state.blaster2OriginY <= 470 && this.state.blaster2OriginY >=19) {
@@ -127,6 +140,7 @@ export default class GameScreen extends React.Component {
     this.b3Frame = setInterval(() => {
       if ((this.state.enemyCurrentX< this.state.blaster3OriginX && this.state.blaster3OriginX < (this.state.enemyCurrentX+100))
         && this.state.enemyCurrentY< this.state.blaster3OriginY && this.state.blaster3OriginY < (this.state.enemyCurrentY+100)){
+          this.bullet3Boom();
           this.setState({enemyLife: this.state.enemyLife-1, showBlaster3: 'none'})
           clearInterval(this.b3Frame)
       } else if (this.state.blaster3OriginY <= 470 && this.state.blaster3OriginY >=19) {
@@ -156,6 +170,45 @@ export default class GameScreen extends React.Component {
     }, 60);
   }
 
+  bullet1Boom = () => {
+    this.setState({
+      boom1X:this.state.blaster1OriginX,
+      boom1Y:this.state.blaster1OriginY,
+      show1Boom: 'flex',
+    });
+    setTimeout(() => {
+      this.setState({
+        show1Boom: 'none',
+      })
+      }, 300)
+  }
+
+  bullet2Boom = () => {
+    this.setState({
+      boom2X:this.state.blaster2OriginX,
+      boom2Y:this.state.blaster2OriginY,
+      show2Boom: 'flex',
+    });
+    setTimeout(() => {
+      this.setState({
+        show2Boom: 'none',
+      })
+      }, 300)
+  }
+
+  bullet3Boom = () => {
+    this.setState({
+      boom3X:this.state.blaster3OriginX,
+      boom3Y:this.state.blaster3OriginY,
+      show3Boom: 'flex',
+    });
+    setTimeout(() => {
+      this.setState({
+        show3Boom: 'none',
+      })
+      }, 300)
+  }
+
   bulletBoom = () => {
     this.setState({
       boomX:this.state.enemyBulletX,
@@ -163,14 +216,11 @@ export default class GameScreen extends React.Component {
       showBoom: 'flex',
       playerLife: this.state.playerLife-1
     });
-    
-
-      setTimeout(() => {
-        this.setState({
-          showBoom: 'none',
-        })
-        }, 300)
-
+    setTimeout(() => {
+      this.setState({
+        showBoom: 'none',
+      })
+      }, 300)
   }
 
   componentWillUnmount(){
@@ -180,6 +230,7 @@ export default class GameScreen extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.state.winWidth,this.state.winHeight)
     this.aniTime = setInterval(() => {
       this.setState({gameTime: this.state.gameTime-1})
       if(this.state.gameTime == 0) {
@@ -190,13 +241,6 @@ export default class GameScreen extends React.Component {
     var bossBullet;
     bossBullet = setInterval(()=>{
       if(this.state.showEnemyBullet=='none'){
-        // this._myComponent._component.measure((width, height, px, py, fx, fy) => {
-        //   this.setState({
-        //     showEnemyBullet:'flex',
-        //     enemyBulletX: px+25,
-        //     enemyBulletY: py+25
-        //   });
-        // });
           this.setState({
             showEnemyBullet:'flex',
             enemyBulletX: this.state.beginX+25,
@@ -208,9 +252,9 @@ export default class GameScreen extends React.Component {
           this.setState({showEnemyBullet: 'none'})
           this.bulletBoom();
           clearInterval(this.bossBullet)
-      } else if (this.state.enemyBulletY < 470) {
+      } else if (this.state.enemyBulletY < 1000) {
         this.setState({showEnemyBullet: 'flex', enemyBulletY: this.state.enemyBulletY+10})
-      } else if (this.state.enemyBulletY >= 450){
+      } else if (this.state.enemyBulletY >= 800){
         this.setState({showEnemyBullet: 'none'})
         clearInterval(this.bossBullet)
       }
@@ -271,6 +315,18 @@ export default class GameScreen extends React.Component {
             <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.showBoom}}/>
           </View>
 
+          <View style={{top:this.state.boom1Y, left: this.state.boom1X, position: 'absolute', width: 50, height: 50, display: this.state.show1Boom}}>
+            <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.show1Boom}}/>
+          </View>
+
+          <View style={{top:this.state.boom2Y, left: this.state.boom2X, position: 'absolute', width: 50, height: 50, display: this.state.show2Boom}}>
+            <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.show2Boom}}/>
+          </View>
+
+          <View style={{top:this.state.boom3Y, left: this.state.boom3X, position: 'absolute', width: 50, height: 50, display: this.state.show3Boom}}>
+            <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.show3Boom}}/>
+          </View>
+
           <View style={{top:this.state.enemyBulletY, left: this.state.enemyBulletX, position: 'absolute', width: 50, height: 50, display: this.state.showEnemyBullet}}>
             <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showEnemyBullet}}/>
           </View>
@@ -328,7 +384,8 @@ export default class GameScreen extends React.Component {
 const styles = StyleSheet.create({
     gameScreen:{
         position: 'absolute',
-        height: '100%', width: '100%',
+        top: '10%',
+        height: '60%', width: '100%',
         backgroundColor: 'black',
         justifyContent:'center', alignItems:'center'
     },
@@ -337,7 +394,7 @@ const styles = StyleSheet.create({
       width: 100,
       height: 100,
       bottom: 0,
-      zIndex: 5
+      zIndex: 5,
     },
     ballImg: {
       position: 'absolute',
