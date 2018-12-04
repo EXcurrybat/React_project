@@ -9,6 +9,7 @@ export default class GameScreen extends React.Component {
     this.state={
       shipImage: require('../assets/spriteAssets/ship.png'),
       blaster: require('../assets/spriteAssets/blaster.gif'),
+      boom: require('../assets/spriteAssets/boom.gif'),
       initialShipY: 440,
       initialShipX: 180,
       blaster1OriginX: 0,
@@ -31,6 +32,12 @@ export default class GameScreen extends React.Component {
       new: false,
       enemyCurrentX: '0',
       enemyCurrentY: '0',
+      enemyBulletX: 0,
+      enemyBulletY: 0,
+      showEnemyBullet: 'none',
+      showBoom: 'none',
+      boomX: 0,
+      boomY: 0,
     }
     this.randomX = this.randomX.bind(this);
     this.randomY = this.randomY.bind(this);
@@ -147,6 +154,22 @@ export default class GameScreen extends React.Component {
     }, 60);
   }
 
+  bulletBoom = () => {
+    this.setState({
+      boomX:this.state.enemyBulletX,
+      boomY:this.state.enemyBulletY,
+      showBoom: 'flex',
+    });
+    
+
+      setTimeout(() => {
+        this.setState({
+          showBoom: 'none',
+        })
+        }, 300)
+
+  }
+
   componentWillUnmount(){
     clearInterval(this.interval);
     clearInterval(this.updateInterval);
@@ -160,6 +183,35 @@ export default class GameScreen extends React.Component {
         clearInterval(this.aniTime)
       }
     }, 1000);
+
+    var bossBullet;
+    bossBullet = setInterval(()=>{
+      if(this.state.showEnemyBullet=='none'){
+        // this._myComponent._component.measure((width, height, px, py, fx, fy) => {
+        //   this.setState({
+        //     showEnemyBullet:'flex',
+        //     enemyBulletX: px+25,
+        //     enemyBulletY: py+25
+        //   });
+        // });
+          this.setState({
+            showEnemyBullet:'flex',
+            enemyBulletX: this.state.beginX+25,
+            enemyBulletY: this.state.beginY+25
+          });
+        
+      }else if (((this.state.initialShipX-25)< this.state.enemyBulletX && this.state.enemyBulletX < (this.state.initialShipX+25))
+        && (this.state.initialShipY-25)< this.state.enemyBulletY && this.state.enemyBulletY < (this.state.initialShipY+25)){
+          this.setState({showEnemyBullet: 'none'})
+          this.bulletBoom();
+          clearInterval(this.bossBullet)
+      } else if (this.state.enemyBulletY < 1000) {
+        this.setState({showEnemyBullet: 'flex', enemyBulletY: this.state.enemyBulletY+10})
+      } else if (this.state.enemyBulletY >= 800){
+        this.setState({showEnemyBullet: 'none'})
+        clearInterval(this.bossBullet)
+      }
+    }, 50);
 
     this.interval = setInterval(() => {
       if(this.state.new == false){
@@ -205,6 +257,18 @@ export default class GameScreen extends React.Component {
         <Text style={{color: 'white', position: 'absolute', top:25}}>{this.state.gameTime}</Text>
         <Text style={{color: 'white', position: 'absolute', top:0, right:25}}>Enemy Life: </Text>
         <Text style={{color: 'white', position: 'absolute', top:25, right:70}}>{this.state.enemyLife}</Text>
+
+        {/* <Animatable.View style={{top:this.state.beginY-50, left: this.state.beginX+25, position: 'absolute', width: 50, height: 50}} animation={{0:{top: this.state.beginY}, 1:{top: 1000}}} iterationCount="infinite" easing="linear" delay={2000} duration={2000}>
+          <Image source={this.state.blaster} style={{height: 50, width: 50}}/>
+        </Animatable.View> */}
+
+        <View style={{top:this.state.boomY, left: this.state.boomX, position: 'absolute', width: 50, height: 50, display: this.state.showBoom}}>
+          <Image source={this.state.boom} style={{height: 50, width: 50, display: this.state.showBoom}}/>
+        </View>
+
+        <View style={{top:this.state.enemyBulletY, left: this.state.enemyBulletX, position: 'absolute', width: 50, height: 50, display: this.state.showEnemyBullet}}>
+          <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showEnemyBullet}}/>
+        </View>
 
         <View style={{top:this.state.blaster1OriginY, left: this.state.blaster1OriginX, position: 'absolute', width: 50, height: 50, display: this.state.showBlaster1}}>
           <Image source={this.state.blaster} style={{height: 50, width: 50, display: this.state.showBlaster1}}/>
