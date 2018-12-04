@@ -16,7 +16,8 @@ export default class App extends React.Component {
       displayMenu: 100,
       menuSelection: '',
       secret: '',
-      menuPosition: 237
+      menuPosition: 237,
+      gameState: ''
     }
   }
   startGame=()=>{
@@ -48,11 +49,14 @@ export default class App extends React.Component {
       }
     }
     
+    gsData = (data) => {
+      this.setState({gameState: data})
+    }
+
     let returnScreen = () =>{
-      if (this.state.menuSelection == 'game'){
-        return <GameScreen direction={inputData}/>
-      } else if (this.state.menuSelection == 'highscore' && this.state.menuInput == 'B') {
-        this.setState({menuSelection: ''})
+      console.log(this.state.gameState)
+      if ((this.state.menuSelection == 'highscore' && this.state.menuInput == 'B')||(this.state.gameState == 'finished' && this.state.menuInput == 'B')) {
+        this.setState({menuSelection: '', gameState: ''})
         return <View style={{width: '100%', height: '100%', justifyContent:'center', alignItems: 'center'}}>
           <Text style={{color: 'white', fontSize: 30, position: 'absolute', top: 30, textAlign: 'center', fontWeight: 'bold'}}>GENERIC AF SPACE SHOOTER GAME</Text>
           <Text style={{color: 'white', fontSize: 15, position: 'absolute', textAlign: 'center'}}>Start Game</Text>
@@ -60,6 +64,8 @@ export default class App extends React.Component {
           <Image source={require('./assets/layoutAssets/arrow.png')} style={{width: 30, height: 30, position:'absolute', left: 70, top: this.state.menuPosition}}/>
           {menuInteraction()}
         </View>
+      } else if (this.state.menuSelection == 'game'){
+        return <GameScreen direction={inputData} callbackFromParent={gsData}/>
       } else if (this.state.menuSelection == 'highscore') {
         return <HighScore />
       } else {
