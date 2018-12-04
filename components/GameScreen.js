@@ -255,8 +255,7 @@ export default class GameScreen extends React.Component {
 const styles = StyleSheet.create({
     gameScreen:{
         position: 'absolute',
-        top: '10%',
-        height: '60%', width: '100%',
+        height: '100%', width: '100%',
         backgroundColor: 'black',
         justifyContent:'center', alignItems:'center'
     },
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
       width: 100,
       height: 100,
       bottom: 0,
-      zIndex: 5,
+      zIndex: 5
     },
     ballImg: {
       position: 'absolute',

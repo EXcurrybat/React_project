@@ -1,18 +1,22 @@
 import React from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Button } from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity, Button, Text } from 'react-native';
 
 import GameScreen from './components/GameScreen.js';
 import TitleScreen from './components/TitleScreen';
+import HighScore from './components/Highscore'
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       pressedDirection: '',
+      menuDirection: '',
+      menuInput: '',
       pressedAB: '',
       stop: 'stop',
       displayMenu: 100,
-      myInputs: ''
+      menuSelection: '',
+      menuPosition: 237
     }
   }
   startGame=()=>{
@@ -31,46 +35,48 @@ export default class App extends React.Component {
       abInputs: this.state.pressedAB,
       shipStop: this.state.stop
     }
+
+    let menuInteraction = () => {
+      if (this.state.menuPosition == 237 && this.state.menuDirection == 'Down'){
+        this.setState({menuPosition: this.state.menuPosition+60})
+      } else if (this.state.menuPosition == 297 && this.state.menuDirection == 'Up'){
+        this.setState({menuPosition: this.state.menuPosition-60})
+      } else if (this.state.menuInput == 'A' && this.state.menuPosition == 237){
+        this.setState({menuSelection: 'game', menuDirection: 999, pressedAB: '', menuInput: '', menuDirection: '', pressedDirection: ''})
+      } else if (this.state.menuInput == 'A' && this.state.menuPosition == 297){
+        this.setState({menuSelection: 'highscore', menuDirection: 999, pressedAB: '', menuInput: '', menuDirection: '', pressedDirection: ''})
+      }
+    }
     
     let returnScreen = () =>{
-      if (this.state.myInputs == 'game'){
+      if (this.state.menuSelection == 'game'){
         return <GameScreen direction={inputData}/>
       } else {
-        return <TitleScreen />
+        return <View style={{width: '100%', height: '100%', justifyContent:'center', alignItems: 'center'}}>
+          <Text style={{color: 'white', fontSize: 30, position: 'absolute', top: 30, textAlign: 'center', fontWeight: 'bold'}}>GENERIC AF SPACE SHOOTER GAME</Text>
+          <Text style={{color: 'white', fontSize: 15, position: 'absolute', textAlign: 'center'}}>Start Game</Text>
+          <Text style={{color: 'white', fontSize: 15, position: 'absolute', top: 300, textAlign: 'center'}}>See Highscore</Text>
+          <Image source={require('./assets/layoutAssets/arrow.png')} style={{width: 30, height: 30, position:'absolute', left: 70, top: this.state.menuPosition}}/>
+          {menuInteraction()}
+        </View>
       }
     }
 
     return (
       <View style={styles.container}>
           
-        {returnScreen()}
-
-        <View style={[styles.buttonContainer, {opacity: this.state.displayMenu}]}>
-          <Button 
-            title="Start Game"
-            color='rgba(150, 150, 150, 0.75)'
-            accessibilityLabel="Tap to start the game"
-            onPress={this.startGame}
-          />
-        </View>
-        
-        <View style={[styles.hsButtonContainer, {opacity: this.state.displayMenu}]}>
-					<Button 
-            title="Highscores"
-            color='rgba(150, 150, 150, 0.75)'
-            accessibilityLabel="Tap to see high scores"
-            onPress={this.highScore}
-          />
+        <View style={styles.gameScreen}>
+          {returnScreen()}
         </View>
         
         <View style={styles.dpad}>
           <Image source={require('./assets/layoutAssets/dpad.png')} style={{height:'100%', width:'100%', alignSelf: 'center'}} resizeMode='stretch'/>
           <TouchableOpacity 
-            onPressIn={()=> this.setState({pressedDirection: 'Up', stop: ''})} 
+            onPressIn={()=> this.setState({pressedDirection: 'Up', stop: '', menuDirection: 'Up'})} 
             onPressOut={()=> this.setState({pressedDirection: '', pressedAB:'', stop: 'stop'})}
             style={styles.up}/>
           <TouchableOpacity 
-            onPressIn={()=> this.setState({pressedDirection: 'Down', stop: ''})} 
+            onPressIn={()=> this.setState({pressedDirection: 'Down', stop: '', menuDirection: 'Down'})} 
             onPressOut={()=> this.setState({pressedDirection: '', pressedAB:'', stop: 'stop'})}
             style={styles.down}/>
           <TouchableOpacity 
@@ -85,7 +91,7 @@ export default class App extends React.Component {
 
         <View style={styles.buttonView}>
           <TouchableOpacity 
-            onPressIn={()=> this.setState({pressedAB: 'A'})}
+            onPressIn={()=> this.setState({pressedAB: 'A', menuInput: 'A'})}
             onPressOut={()=> this.setState({pressedAB: ''})}
             style={{height:'50%', width:'50%', position: 'absolute', top: 0, right: 0}}>
               <Image source={require('./assets/layoutAssets/aButton.png')} style={{height: '100%', width: '100%'}} resizeMode={'stretch'}/>
@@ -108,6 +114,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  gameScreen:{
+    position: 'absolute',
+    top: '10%',
+    height: '60%', width: '100%',
+    backgroundColor: 'black',
+    justifyContent:'center', alignItems:'center'
   },
   dpad: {
     position: 'absolute',
