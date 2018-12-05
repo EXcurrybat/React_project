@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Image, TouchableOpacity, Button, Text } from 'react-native';
-
+import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
+import { Constants, Audio, Permissions, Expo } from 'expo';
 import GameScreen from './components/GameScreen.js';
 import HighScore from './components/Highscore.js'
 
@@ -17,7 +17,7 @@ export default class App extends React.Component {
       menuSelection: '',
       secret: '',
       menuPosition: 237,
-      gameState: ''
+      gameState: '',
     }
   }
   startGame=()=>{
@@ -30,7 +30,27 @@ export default class App extends React.Component {
     this.setState({myInputs: 'score', displayMenu: 0})
   }
 
+  async playMusic() {
+    try {
+        await Audio.setIsEnabledAsync(true);
+        const sound = new Audio.Sound();
+        await sound.loadAsync(require('./assets/soundAssets/bgMusic.mp3'));
+        this.audioPlayer1  = sound;
+        this.audioPlayer1.setIsLoopingAsync(true);
+        this.audioPlayer1.playAsync();
+        this.audioPlayer1.setVolumeAsync(0.8);
+       // Your sound is playing!
+    } catch(error) {
+      console.error(error);
+    }
+  }
+
+  componentDidMount() {
+    this.playMusic()
+  }
+
   render() {
+    
     var inputData = {
       buttonDirection: this.state.pressedDirection,
       abInputs: this.state.pressedAB,
@@ -54,7 +74,6 @@ export default class App extends React.Component {
     }
 
     let returnScreen = () =>{
-      console.log(this.state.gameState)
       if ((this.state.menuSelection == 'highscore' && this.state.menuInput == 'B')||(this.state.gameState == 'finished' && this.state.menuInput == 'B')) {
         this.setState({menuSelection: '', gameState: ''})
         return <View style={{width: '100%', height: '100%', justifyContent:'center', alignItems: 'center'}}>
@@ -85,7 +104,7 @@ export default class App extends React.Component {
         <View style={styles.gameScreen}>
           {returnScreen()}
         </View>
-        
+
         <View style={styles.dpad}>
           <Image source={require('./assets/layoutAssets/dpad.png')} style={{height:'100%', width:'100%', alignSelf: 'center'}} resizeMode='stretch'/>
           <TouchableOpacity 

@@ -9,6 +9,8 @@ export default class HighscoreComponent extends Component {
         var highscores = require('../highscore.json');
 		this.state = {
 			items: highscores.highscores,
+			latestScore: 'None',
+			dataPassed: 'no'
 		}
 		this.goBack= this.goBack.bind(this);
 	}
@@ -19,7 +21,7 @@ export default class HighscoreComponent extends Component {
 				style = {styles.button}
 				underlayColor = "white"
 			>
-				<Text style={styles.title}>Score: {task.item.score} pts</Text>
+				<Text style={styles.title}>{Object.keys(task.item)}: {task.item[Object.keys(task.item)]} pts</Text>
 			</TouchableHighlight>
 		)
 	}
@@ -31,7 +33,7 @@ export default class HighscoreComponent extends Component {
 	componentDidMount(){
 		var highscores = require('../highscore.json');
 		var topFive = [];
-		for(var index= 0; index < highscores.highscores.length && index < 5; index++){
+		for(var index= 0; index < highscores.highscores.length && index < 6; index++){
 			topFive.push(highscores.highscores[index]);
 		}
 		
